@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://pixijs.download/release/pixi.min.js"></script>
+  </head>
+  <body>
+    <h2 id="score">Score: 0</h2>
+    <script>
+      const settings = {
+        canvasSize: [600, 600],
+        rectangleSize: 80,
+      };
+
+      let state = {
+        score: 0,
+      };
+
+      // Create the application helper and add its render target to the page
+      let app = new PIXI.Application({
+        width: settings.canvasSize[0],
+        height: settings.canvasSize[1],
+      });
+      document.body.appendChild(app.view);
+
+      // Create the sprite and add it to the stage
+      // let sprite = PIXI.Sprite.from("sample.png");
+      let rec = new PIXI.Graphics();
+      rec.beginFill(0x666666);
+      rec.lineStyle({ color: 0xffffff, width: 4, alignment: 0 });
+      rec.drawRect(0, 0, settings.rectangleSize, settings.rectangleSize);
+
+      // Unable interaction
+      rec.buttonMode = true;
+      rec.interactive = true;
+      rec.on("pointerdown", onClick);
+
+      app.stage.addChild(rec);
+
+      // Add a ticker callback to move the sprite back and forth
+      let elapsed = 0.0;
+      app.ticker.add((delta) => {
+        elapsed += delta;
+        if (elapsed >= 100) {
+          updateRecPosition();
+        }
+      });
+
+      function onClick() {
+        updateRecPosition();
+        addScore(1);
+      }
+
+      function updateRecPosition() {
+        elapsed = 0;
+        rec.x =
+          Math.random() * (settings.canvasSize[0] - settings.rectangleSize);
+        rec.y =
+          Math.random() * (settings.canvasSize[1] - settings.rectangleSize);
+      }
+
+      function addScore(score) {
+        state.score += score;
+        updateScore();
+      }
+
+      function updateScore() {
+        let scoreTag = document.getElementById("score");
+        scoreTag.innerHTML = "Score: " + state.score;
+      }
+
+      function onKeyDown(key) {
+        let scoreToAdd = 0;
+        switch (key.keyCode) {
+          case 32:
+            scoreToAdd = 5;
+        }
+
+        addScore(scoreToAdd);
+      }
+
+      document.addEventListener("keydown", onKeyDown);
+    </script>
+  </body>
+</html>
